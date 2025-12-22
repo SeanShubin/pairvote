@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -16,29 +15,32 @@ kotlin {
         binaries.executable()
     }
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
-
     sourceSets {
+        // Shared: Business logic + Resources (needed for generated code)
         commonMain.dependencies {
             implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+
+        // Desktop: Compose Multiplatform + Material3
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.foundation)
+            implementation(compose.components.uiToolingPreview)
             implementation(libs.kotlinx.coroutinesSwing)
+        }
+
+        // Web: Compose HTML (no WASM)
+        jsMain.dependencies {
+            implementation(compose.html.core)
         }
     }
 }
