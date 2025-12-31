@@ -19,7 +19,7 @@ fun CandidateEditor(
     Table {
         Thead {
             Tr {
-                CandidateModel.columnNames.forEach { columnName ->
+                candidatesModel.getColumnNames().forEach { columnName ->
                     Th { Text(columnName) }
                 }
             }

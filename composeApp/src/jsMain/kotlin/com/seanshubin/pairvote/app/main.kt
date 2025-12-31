@@ -11,8 +11,8 @@ fun main() {
 }
 
 fun startApp(
-    windowProvider: WindowProvider = BrowserWindowProvider,
-    documentBodyProvider: DocumentBodyProvider = BrowserDocumentBodyProvider
+    windowProvider: WindowProvider,
+    documentBodyProvider: DocumentBodyProvider
 ) {
     windowProvider.onerror = { message, source, lineno, colno, error ->
         renderErrorPage(message, error, documentBodyProvider)

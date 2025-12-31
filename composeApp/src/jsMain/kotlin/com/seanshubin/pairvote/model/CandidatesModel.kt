@@ -20,7 +20,7 @@ data class CandidatesModel(
     }
 
     fun getCell(row: Int, column: Int): CandidateCellModel {
-        if(isDeleteColumn(column)) return CandidateCellModelRowDeleter
+        if (isDeleteColumn(column)) return CandidateCellModelRowDeleter
         if (isNewRow(row)) return CandidateCellModelString("", errorMessage = null)
         val getter = CandidateModel.getterByColumn(column)
         val errorMessage = duplicateErrorMessage(row, column)
@@ -34,26 +34,24 @@ data class CandidatesModel(
 
     fun rowIsRemovable(row: Int): Boolean = row < candidateList.size
 
-    fun getRowCount(): Int {
-        return candidateList.size + 1
-    }
+    fun getRowCount(): Int = candidateList.size + 1
 
-    fun getColumnCount(): Int {
-        return CandidateModel.columnNames.size
-    }
+    fun getColumnCount(): Int = CandidateModel.columnNames.size
 
-    private fun duplicateErrorMessage(row:Int, column:Int):String? {
+    fun getColumnNames(): List<String> = CandidateModel.columnNames
+
+    private fun duplicateErrorMessage(row: Int, column: Int): String? {
         val getter = CandidateModel.getterByColumn(column)
         val currentValue = getter(candidateList[row])
         val duplicateRows = candidateList.mapIndexedNotNull { index, candidateModel ->
-            if(index == row) null
-            else if(getter(candidateModel) == currentValue) index
+            if (index == row) null
+            else if (getter(candidateModel) == currentValue) index
             else null
         }
-        if(duplicateRows.isEmpty()) return null
+        if (duplicateRows.isEmpty()) return null
         return "Duplicate value found in row(s) ${duplicateRows.joinToString(", ")}"
     }
 
     private fun isNewRow(row: Int): Boolean = row >= candidateList.size
-    private fun isDeleteColumn(column: Int): Boolean = column >= CandidateModel.columnNames.size -1
+    private fun isDeleteColumn(column: Int): Boolean = column >= CandidateModel.columnNames.size - 1
 }
