@@ -2,8 +2,10 @@ package com.seanshubin.pairvote.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import kotlinx.browser.document
-import kotlinx.browser.window
+import com.seanshubin.pairvote.platform.BrowserDocumentProvider
+import com.seanshubin.pairvote.platform.BrowserWindowProvider
+import com.seanshubin.pairvote.platform.DocumentProvider
+import com.seanshubin.pairvote.platform.WindowProvider
 import org.jetbrains.compose.web.dom.Td
 import org.w3c.dom.HTMLTableCellElement
 
@@ -11,7 +13,9 @@ import org.w3c.dom.HTMLTableCellElement
 fun EditableCell(
     value: String,
     errorMessage: String?,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    documentProvider: DocumentProvider = BrowserDocumentProvider,
+    windowProvider: WindowProvider = BrowserWindowProvider
 ) {
     Td(attrs = {
         contentEditable(true)
@@ -22,19 +26,23 @@ fun EditableCell(
     }) {
         DisposableEffect(value) {
             val element = scopeElement as HTMLTableCellElement
-            if (document.activeElement != element) {
+            if (documentProvider.activeElement != element) {
                 element.textContent = value
             }
-            val cleanup = setupEditableCellListeners(element, onValueChange)
+            val cleanup = setupEditableCellListeners(element, onValueChange, documentProvider, windowProvider)
             onDispose { cleanup() }
         }
     }
 }
 
-private fun selectAllContent(element: HTMLTableCellElement) {
-    window.setTimeout({
-        val selection = document.asDynamic().getSelection()
-        val range = document.createRange()
+private fun selectAllContent(
+    element: HTMLTableCellElement,
+    documentProvider: DocumentProvider,
+    windowProvider: WindowProvider
+) {
+    windowProvider.setTimeout({
+        val selection = documentProvider.getSelection()
+        val range = documentProvider.createRange()
         range.selectNodeContents(element)
         selection?.removeAllRanges()
         selection?.addRange(range)
@@ -43,15 +51,17 @@ private fun selectAllContent(element: HTMLTableCellElement) {
 
 private fun setupEditableCellListeners(
     element: HTMLTableCellElement,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    documentProvider: DocumentProvider,
+    windowProvider: WindowProvider
 ): () -> Unit {
     val inputListener: (dynamic) -> Unit = {
         val newValue = element.textContent ?: ""
         onValueChange(newValue)
     }
-    val focusListener: (dynamic) -> Unit = { selectAllContent(element) }
-    val mouseUpListener: (dynamic) -> Unit = { selectAllContent(element) }
-    val clickListener: (dynamic) -> Unit = { selectAllContent(element) }
+    val focusListener: (dynamic) -> Unit = { selectAllContent(element, documentProvider, windowProvider) }
+    val mouseUpListener: (dynamic) -> Unit = { selectAllContent(element, documentProvider, windowProvider) }
+    val clickListener: (dynamic) -> Unit = { selectAllContent(element, documentProvider, windowProvider) }
 
     element.addEventListener("input", inputListener)
     element.addEventListener("focus", focusListener)
