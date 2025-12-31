@@ -1,6 +1,8 @@
 package com.seanshubin.pairvote.component
 
 import androidx.compose.runtime.Composable
+import com.seanshubin.pairvote.model.CandidateCellModelRowDeleter
+import com.seanshubin.pairvote.model.CandidateCellModelString
 import com.seanshubin.pairvote.model.CandidateModel
 import com.seanshubin.pairvote.model.CandidatesModel
 import org.jetbrains.compose.web.dom.*
@@ -25,23 +27,30 @@ fun CandidateEditor(
         Tbody {
             (0 until candidatesModel.getRowCount()).forEach { rowIndex ->
                 Tr {
-                    candidatesModel.editableColumnIndices().forEach { columnIndex ->
-                        EditableCell(
-                            value = candidatesModel.getCell(rowIndex, columnIndex),
-                            onValueChange = { newValue ->
-                                onCellChange(rowIndex, columnIndex, newValue)
-                            }
-                        )
-                    }
-                    Td(attrs = { classes("delete-cell") }) {
-                        if (candidatesModel.rowIsRemovable(rowIndex)) {
-                            Button(attrs = {
-                                onClick {
-                                    onRowRemove(rowIndex)
+                    (0 until candidatesModel.getColumnCount()).forEach { columnIndex ->
+                        val candidateCellModel = candidatesModel.getCell(rowIndex, columnIndex)
+                        when (candidateCellModel) {
+                            is CandidateCellModelRowDeleter -> {
+                                Td(attrs = { classes("delete-cell") }) {
+                                    if (candidatesModel.rowIsRemovable(rowIndex)) {
+                                        Button(attrs = {
+                                            onClick {
+                                                onRowRemove(rowIndex)
+                                            }
+                                            classes("delete-button")
+                                        }) {
+                                            Text("×")
+                                        }
+                                    }
                                 }
-                                classes("delete-button")
-                            }) {
-                                Text("×")
+                            }
+                            is CandidateCellModelString -> {
+                                EditableCell(
+                                    value = candidateCellModel.value,
+                                    onValueChange = { newValue ->
+                                        onCellChange(rowIndex, columnIndex, newValue)
+                                    }
+                                )
                             }
                         }
                     }

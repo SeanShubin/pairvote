@@ -19,10 +19,11 @@ data class CandidatesModel(
         return copy(candidateList = newCandidateList)
     }
 
-    fun getCell(row: Int, column: Int): String {
-        if (isNewRow(row)) return ""
+    fun getCell(row: Int, column: Int): CandidateCellModel {
+        if(isDeleteColumn(column)) return CandidateCellModelRowDeleter
+        if (isNewRow(row)) return CandidateCellModelString("", isError=false)
         val getter = CandidateModel.getterByColumn(column)
-        return getter(candidateList[row])
+        return CandidateCellModelString(getter(candidateList[row]), isError=false)
     }
 
     fun removeRow(row: Int): CandidatesModel {
@@ -40,7 +41,6 @@ data class CandidatesModel(
         return CandidateModel.columnNames.size
     }
 
-    fun editableColumnIndices(): IntRange = CandidateModel.editableColumnIndices
-
     private fun isNewRow(row: Int): Boolean = row >= candidateList.size
+    private fun isDeleteColumn(column: Int): Boolean = column >= CandidateModel.columnNames.size -1
 }
