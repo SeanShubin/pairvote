@@ -6,29 +6,26 @@ data class CandidateModel(
 ) {
     companion object {
         val empty = CandidateModel("", "")
-        val columnNames = listOf("Id", "Name", "")
-        val editableColumnIndices = 0 until columnNames.size -1
-        private val idSetter: (CandidateModel, String) -> CandidateModel = { candidateModel, value ->
-            candidateModel.copy(id = value)
-        }
-        private val nameSetter: (CandidateModel, String) -> CandidateModel = { candidateModel, value ->
-            candidateModel.copy(name = value)
-        }
-        private val idGetter: (CandidateModel) -> String = { candidateModel -> candidateModel.id }
-        private val nameGetter: (CandidateModel) -> String = { candidateModel -> candidateModel.name }
-        private val setterByColumn: Map<Int, (CandidateModel, String) -> CandidateModel> = mapOf(
-            0 to idSetter,
-            1 to nameSetter
+
+        private data class ColumnInfo(
+            val name: String,
+            val getter: (CandidateModel) -> String,
+            val setter: (CandidateModel, String) -> CandidateModel
         )
-        private val getterByColumn: Map<Int, (CandidateModel) -> String> = mapOf(
-            0 to idGetter,
-            1 to nameGetter
+
+        private val columns = listOf(
+            ColumnInfo("Id", { it.id }, { model, value -> model.copy(id = value) }),
+            ColumnInfo("Name", { it.name }, { model, value -> model.copy(name = value) })
         )
+
+        val columnNames = columns.map { it.name } + ""
 
         fun setterByColumn(column: Int): ((CandidateModel, String) -> CandidateModel) =
-            setterByColumn[column] ?: throw RuntimeException("Invalid column: $column")
+            columns.getOrNull(column)?.setter
+                ?: throw RuntimeException("Invalid column: $column")
 
         fun getterByColumn(column: Int): ((CandidateModel) -> String) =
-            getterByColumn[column] ?: throw RuntimeException("Invalid column: $column")
+            columns.getOrNull(column)?.getter
+                ?: throw RuntimeException("Invalid column: $column")
     }
 }

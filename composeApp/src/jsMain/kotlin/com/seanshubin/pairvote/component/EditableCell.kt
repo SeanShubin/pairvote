@@ -25,36 +25,44 @@ fun EditableCell(
             if (document.activeElement != element) {
                 element.textContent = value
             }
-
-            val selectAllContent: () -> Unit = {
-                window.setTimeout({
-                    val selection = document.asDynamic().getSelection()
-                    val range = document.createRange()
-                    range.selectNodeContents(element)
-                    selection?.removeAllRanges()
-                    selection?.addRange(range)
-                }, 0)
-            }
-
-            val inputListener: (dynamic) -> Unit = { event ->
-                val newValue = element.textContent ?: ""
-                onValueChange(newValue)
-            }
-            val focusListener: (dynamic) -> Unit = { event -> selectAllContent() }
-            val mouseUpListener: (dynamic) -> Unit = { event -> selectAllContent() }
-            val clickListener: (dynamic) -> Unit = { event -> selectAllContent() }
-
-            element.addEventListener("input", inputListener)
-            element.addEventListener("focus", focusListener)
-            element.addEventListener("mouseup", mouseUpListener)
-            element.addEventListener("click", clickListener)
-
-            onDispose {
-                element.removeEventListener("input", inputListener)
-                element.removeEventListener("focus", focusListener)
-                element.removeEventListener("mouseup", mouseUpListener)
-                element.removeEventListener("click", clickListener)
-            }
+            val cleanup = setupEditableCellListeners(element, onValueChange)
+            onDispose { cleanup() }
         }
+    }
+}
+
+private fun selectAllContent(element: HTMLTableCellElement) {
+    window.setTimeout({
+        val selection = document.asDynamic().getSelection()
+        val range = document.createRange()
+        range.selectNodeContents(element)
+        selection?.removeAllRanges()
+        selection?.addRange(range)
+    }, 0)
+}
+
+private fun setupEditableCellListeners(
+    element: HTMLTableCellElement,
+    onValueChange: (String) -> Unit
+): () -> Unit {
+    val inputListener: (dynamic) -> Unit = {
+        val newValue = element.textContent ?: ""
+        onValueChange(newValue)
+    }
+    val focusListener: (dynamic) -> Unit = { selectAllContent(element) }
+    val mouseUpListener: (dynamic) -> Unit = { selectAllContent(element) }
+    val clickListener: (dynamic) -> Unit = { selectAllContent(element) }
+
+    element.addEventListener("input", inputListener)
+    element.addEventListener("focus", focusListener)
+    element.addEventListener("mouseup", mouseUpListener)
+    element.addEventListener("click", clickListener)
+
+    // Return cleanup function
+    return {
+        element.removeEventListener("input", inputListener)
+        element.removeEventListener("focus", focusListener)
+        element.removeEventListener("mouseup", mouseUpListener)
+        element.removeEventListener("click", clickListener)
     }
 }

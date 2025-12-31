@@ -1,10 +1,6 @@
 package com.seanshubin.pairvote.component
 
 import androidx.compose.runtime.Composable
-import com.seanshubin.pairvote.model.CandidateCellModelRowDeleter
-import com.seanshubin.pairvote.model.CandidateCellModelString
-import com.seanshubin.pairvote.model.CandidateModel
-import com.seanshubin.pairvote.model.CandidatesModel
 import org.jetbrains.compose.web.dom.*
 
 @Composable
