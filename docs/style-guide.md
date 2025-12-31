@@ -9,6 +9,7 @@
 ## Be attentive to abstraction boundaries
 - Don't mix levels of abstraction, no combining of higher level and lower level concerns
 - Single Responsibility Principle, each compilation unit should have only once concern
+- Classes should be isolated from each other by interfaces and dependency injection, only the composition root should know which implementations are actually used.
 - Be especially diligent about how abstraction boundaries affect testability, tests should be
   - Fast, so put abstraction boundaries around slow things such as file system and network access
   - Reliable, so put abstraction boundaries around things depend on environment, such as clock or system properties
