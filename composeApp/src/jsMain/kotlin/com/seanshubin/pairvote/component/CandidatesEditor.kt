@@ -47,6 +47,7 @@ fun CandidateEditor(
                             is CandidateCellModelString -> {
                                 EditableCell(
                                     value = candidateCellModel.value,
+                                    errorMessage = candidateCellModel.errorMessage,
                                     onValueChange = { newValue ->
                                         onCellChange(rowIndex, columnIndex, newValue)
                                     }

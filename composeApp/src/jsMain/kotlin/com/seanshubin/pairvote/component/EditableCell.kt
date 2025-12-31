@@ -10,10 +10,15 @@ import org.w3c.dom.HTMLTableCellElement
 @Composable
 fun EditableCell(
     value: String,
+    errorMessage: String?,
     onValueChange: (String) -> Unit
 ) {
     Td(attrs = {
         contentEditable(true)
+        if (errorMessage != null) {
+            classes("error-cell")  // Add a CSS class
+            title(errorMessage)
+        }
     }) {
         DisposableEffect(value) {
             val element = scopeElement as HTMLTableCellElement

@@ -21,9 +21,10 @@ data class CandidatesModel(
 
     fun getCell(row: Int, column: Int): CandidateCellModel {
         if(isDeleteColumn(column)) return CandidateCellModelRowDeleter
-        if (isNewRow(row)) return CandidateCellModelString("", isError=false)
+        if (isNewRow(row)) return CandidateCellModelString("", errorMessage = null)
         val getter = CandidateModel.getterByColumn(column)
-        return CandidateCellModelString(getter(candidateList[row]), isError=false)
+        val errorMessage = duplicateErrorMessage(row, column)
+        return CandidateCellModelString(getter(candidateList[row]), errorMessage)
     }
 
     fun removeRow(row: Int): CandidatesModel {
@@ -39,6 +40,18 @@ data class CandidatesModel(
 
     fun getColumnCount(): Int {
         return CandidateModel.columnNames.size
+    }
+
+    private fun duplicateErrorMessage(row:Int, column:Int):String? {
+        val getter = CandidateModel.getterByColumn(column)
+        val currentValue = getter(candidateList[row])
+        val duplicateRows = candidateList.mapIndexedNotNull { index, candidateModel ->
+            if(index == row) null
+            else if(getter(candidateModel) == currentValue) index
+            else null
+        }
+        if(duplicateRows.isEmpty()) return null
+        return "Duplicate value found in row(s) ${duplicateRows.joinToString(", ")}"
     }
 
     private fun isNewRow(row: Int): Boolean = row >= candidateList.size

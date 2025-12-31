@@ -52,3 +52,8 @@ tbody tr:hover {
     line-height: 1;
     padding: 0;
 }
+
+.error-cell {
+    border: 2px solid red;
+    background-color: #ffebee;  /* Optional: light red background */
+}
