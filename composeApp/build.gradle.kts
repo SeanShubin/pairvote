@@ -10,8 +10,18 @@ plugins {
 kotlin {
     jvm()
 
-    js {
-        browser()
+//    js {
+//        browser()
+//        binaries.executable()
+//    }
+
+    js(IR) {
+        browser {
+            commonWebpackConfig {
+                devtool = "source-map"
+                sourceMaps = true
+            }
+        }
         binaries.executable()
     }
 
