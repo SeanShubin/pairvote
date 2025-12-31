@@ -1,4 +1,4 @@
-package com.seanshubin.pairvote.ui
+package com.seanshubin.pairvote.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

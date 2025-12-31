@@ -1,4 +1,4 @@
-package com.seanshubin.pairvote.ui
+package com.seanshubin.pairvote.model
 
 data class CandidateModel(
     val id: String,

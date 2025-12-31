@@ -1,6 +1,5 @@
-package com.seanshubin.pairvote
+package com.seanshubin.pairvote.app
 
-import com.seanshubin.pairvote.ui.App
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.jetbrains.compose.web.renderComposable

@@ -1,6 +1,10 @@
-package com.seanshubin.pairvote.ui
+package com.seanshubin.pairvote.app
 
 import androidx.compose.runtime.*
+import com.seanshubin.pairvote.component.CandidateEditor
+import com.seanshubin.pairvote.component.TopWrapper
+import com.seanshubin.pairvote.model.CandidateModel
+import com.seanshubin.pairvote.model.CandidatesModel
 
 @Composable
 fun App() {

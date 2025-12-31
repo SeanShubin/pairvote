@@ -1,4 +1,4 @@
-package com.seanshubin.pairvote.ui
+package com.seanshubin.pairvote.component
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.dom.Div
