@@ -31,18 +31,10 @@ fun CandidateEditor(
                         val candidateCellModel = candidatesModel.getCell(rowIndex, columnIndex)
                         when (candidateCellModel) {
                             is CandidateCellModelRowDeleter -> {
-                                Td(attrs = { classes("delete-cell") }) {
-                                    if (candidatesModel.rowIsRemovable(rowIndex)) {
-                                        Button(attrs = {
-                                            onClick {
-                                                onRowRemove(rowIndex)
-                                            }
-                                            classes("delete-button")
-                                        }) {
-                                            Text("×")
-                                        }
-                                    }
-                                }
+                                DeleteCell(
+                                    isRemovable = candidatesModel.rowIsRemovable(rowIndex),
+                                    onRemove = { onRowRemove(rowIndex) }
+                                )
                             }
                             is CandidateCellModelString -> {
                                 EditableCell(
