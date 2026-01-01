@@ -26,7 +26,7 @@ data class CandidatesModel(
         if (isDeleteColumn(column)) return CandidateCellModelRowDeleter
         if (isNewRow(row)) return CandidateCellModelString("", errorMessage = null)
         val getter = CandidateModel.getterByColumn(column)
-        val errorMessage = duplicateErrorMessage(row, column)
+        val errorMessage = validationErrorMessage(row, column)
         return CandidateCellModelString(getter(candidateList[row]), errorMessage)
     }
 
@@ -43,6 +43,10 @@ data class CandidatesModel(
 
     fun getColumnNames(): List<String> = CandidateModel.columnNames
 
+    private fun validationErrorMessage(row: Int, column: Int): String? {
+        return blankErrorMessage(row, column) ?: duplicateErrorMessage(row, column)
+    }
+
     private fun duplicateErrorMessage(row: Int, column: Int): String? {
         val getter = CandidateModel.getterByColumn(column)
         val currentValue = getter(candidateList[row])
@@ -52,7 +56,15 @@ data class CandidatesModel(
             else null
         }
         if (duplicateRows.isEmpty()) return null
-        return "Duplicate value found in row(s) ${duplicateRows.joinToString(", ")}"
+        if(duplicateRows.size == 1) return "Row $row duplicates value found in row ${duplicateRows.first()}"
+        return "Row $row duplicates values found in rows: ${duplicateRows.joinToString(", ")}"
+    }
+
+    private fun blankErrorMessage(row: Int, column: Int): String? {
+        val getter = CandidateModel.getterByColumn(column)
+        val currentValue = getter(candidateList[row])
+        return if(currentValue.isBlank()) "Blank value not allowed in row $row column $column"
+        else null
     }
 
     private fun isNewRow(row: Int): Boolean = row >= candidateList.size
