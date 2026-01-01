@@ -1,17 +1,20 @@
 package com.seanshubin.pairvote.model
 
+import com.seanshubin.pairvote.text.TextNormalizer
+
 data class CandidatesModel(
     val candidateList: List<CandidateModel>
 ) {
     fun setCell(row: Int, column: Int, value: String): CandidatesModel {
+        val normalizedValue = TextNormalizer.normalize(value)
         val setter = CandidateModel.setterByColumn(column)
         val newCandidateList = if (isNewRow(row)) {
             val currentCandidate = CandidateModel.empty
-            val newCandidate = setter(currentCandidate, value)
+            val newCandidate = setter(currentCandidate, normalizedValue)
             candidateList + newCandidate
         } else {
             val currentCandidate = candidateList[row]
-            val updatedCandidate = setter(currentCandidate, value)
+            val updatedCandidate = setter(currentCandidate, normalizedValue)
             candidateList.mapIndexed { index, candidateModel ->
                 if (index == row) updatedCandidate else candidateModel
             }
