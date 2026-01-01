@@ -13,8 +13,8 @@ fun CandidateEditor(
     onCellChange: (row: Int, column: Int, value: String) -> Unit,
     onRowRemove: (row: Int) -> Unit
 ) {
-    P {
-        Text("Candidates")
+    H2 {
+        Text("Candidates (${candidatesModel.candidateList.size})")
     }
     Table {
         Thead {
