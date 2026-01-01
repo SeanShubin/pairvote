@@ -2,30 +2,6 @@ package com.seanshubin.pairvote.platform
 
 import org.w3c.dom.Element
 
-interface DocumentProvider {
-    val activeElement: Element?
-    fun createRange(): RangeProvider
-    fun getSelection(): SelectionProvider?
-}
-
-interface WindowProvider {
-    fun setTimeout(callback: () -> Unit, delayMs: Int)
-    var onerror: ((message: Any?, source: String?, lineno: Int?, colno: Int?, error: Any?) -> Boolean)?
-}
-
-interface SelectionProvider {
-    fun removeAllRanges()
-    fun addRange(range: RangeProvider)
-}
-
-interface RangeProvider {
-    fun selectNodeContents(element: Element)
-}
-
-interface DocumentBodyProvider {
-    var innerHTML: String?
-}
-
 object BrowserDocumentProvider : DocumentProvider {
     override val activeElement: Element?
         get() = kotlinx.browser.document.activeElement
@@ -70,8 +46,8 @@ private class BrowserSelectionProvider(private val selection: dynamic) : Selecti
 }
 
 private class BrowserRangeProvider(val range: org.w3c.dom.Range) : RangeProvider {
-    override fun selectNodeContents(element: Element) {
-        range.selectNodeContents(element)
+    override fun selectNodeContents(element: Any) {
+        range.selectNodeContents(element as Element)
     }
 }
 
