@@ -5,12 +5,19 @@ import com.seanshubin.pairvote.component.CandidateEditor
 import com.seanshubin.pairvote.component.TopWrapper
 import com.seanshubin.pairvote.model.CandidateModel
 import com.seanshubin.pairvote.model.CandidatesModel
+import com.seanshubin.pairvote.storage.BrowserStorageProvider
+import com.seanshubin.pairvote.storage.CandidatesRepository
+import com.seanshubin.pairvote.storage.LocalStorageCandidatesRepository
 
 @Composable
-fun App() {
+fun App(
+    repository: CandidatesRepository = LocalStorageCandidatesRepository(
+        BrowserStorageProvider
+    )
+) {
     var candidatesModel by remember {
         mutableStateOf(
-            CandidatesModel(
+            repository.load() ?:CandidatesModel(
                 listOf(
                     CandidateModel("a", "Alfa"),
                     CandidateModel("b", "Bravo"),
@@ -19,14 +26,19 @@ fun App() {
             )
         )
     }
+
+    fun updateModel(newModel: CandidatesModel) {
+        candidatesModel = newModel
+        repository.save(newModel)  // ← Save after each change
+    }
     TopWrapper {
         CandidateEditor(
             candidatesModel = candidatesModel,
             onCellChange = { row, column, value ->
-                candidatesModel = candidatesModel.setCell(row, column, value)
+                updateModel(candidatesModel.setCell(row, column, value))
             },
             onRowRemove = { row ->
-                candidatesModel = candidatesModel.removeRow(row)
+                updateModel(candidatesModel.removeRow(row))
             })
     }
 }
